@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.Lyankun.springboot.mapper.BreedinfoMapper" >
+
+  <!-- 配置mybatis自带的二级缓存 -->
+  <cache type="org.apache.ibatis.cache.impl.PerpetualCache"/>
+
+
+  <resultMap id="BaseResultMap" type="Breedinfo" >
+    <id column="breedId" property="breedid" jdbcType="INTEGER" />
+    <result column="breedName" property="breedname" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    breedId, breedName
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from breedinfo
+    where breedId = #{breedid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from breedinfo
+    where breedId = #{breedid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="Breedinfo" >
+    insert into breedinfo (breedId, breedName)
+    values (#{breedid,jdbcType=INTEGER}, #{breedname,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="Breedinfo" >
+    insert into breedinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="breedid != null" >
+        breedId,
+      </if>
+      <if test="breedname != null" >
+        breedName,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="breedid != null" >
+        #{breedid,jdbcType=INTEGER},
+      </if>
+      <if test="breedname != null" >
+        #{breedname,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="Breedinfo" >
+    update breedinfo
+    <set >
+      <if test="breedname != null" >
+        breedName = #{breedname,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where breedId = #{breedid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="Breedinfo" >
+    update breedinfo
+    set breedName = #{breedname,jdbcType=VARCHAR}
+    where breedId = #{breedid,jdbcType=INTEGER}
+  </update>
+
+  <!--自定义查询-->
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/> from breedinfo
+  </select>
+</mapper>

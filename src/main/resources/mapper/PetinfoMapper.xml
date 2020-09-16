@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.com.Lyankun.springboot.mapper.PetinfoMapper" >
+
+
+  <resultMap id="BaseResultMap" type="Petinfo" >
+    <id column="petId" property="petid" jdbcType="INTEGER" />
+    <result column="petName" property="petname" jdbcType="VARCHAR" />
+    <result column="breedId" property="breedid" jdbcType="INTEGER" />
+    <result column="petSex" property="petsex" jdbcType="INTEGER" />
+    <result column="birthday" property="birthday" jdbcType="DATE" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    petId, petName, breedId, petSex, birthday, description
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from petinfo
+    where petId = #{petid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from petinfo
+    where petId = #{petid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="Petinfo" >
+    insert into petinfo (petId, petName, breedId, 
+      petSex, birthday, description
+      )
+    values (#{petid,jdbcType=INTEGER}, #{petname,jdbcType=VARCHAR}, #{breedid,jdbcType=INTEGER}, 
+      #{petsex,jdbcType=INTEGER}, #{birthday,jdbcType=DATE}, #{description,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="Petinfo" >
+    insert into petinfo
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="petid != null" >
+        petId,
+      </if>
+      <if test="petname != null" >
+        petName,
+      </if>
+      <if test="breedid != null" >
+        breedId,
+      </if>
+      <if test="petsex != null" >
+        petSex,
+      </if>
+      <if test="birthday != null" >
+        birthday,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="petid != null" >
+        #{petid,jdbcType=INTEGER},
+      </if>
+      <if test="petname != null" >
+        #{petname,jdbcType=VARCHAR},
+      </if>
+      <if test="breedid != null" >
+        #{breedid,jdbcType=INTEGER},
+      </if>
+      <if test="petsex != null" >
+        #{petsex,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null" >
+        #{birthday,jdbcType=DATE},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="Petinfo" >
+    update petinfo
+    <set >
+      <if test="petname != null" >
+        petName = #{petname,jdbcType=VARCHAR},
+      </if>
+      <if test="breedid != null" >
+        breedId = #{breedid,jdbcType=INTEGER},
+      </if>
+      <if test="petsex != null" >
+        petSex = #{petsex,jdbcType=INTEGER},
+      </if>
+      <if test="birthday != null" >
+        birthday = #{birthday,jdbcType=DATE},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where petId = #{petid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="Petinfo" >
+    update petinfo
+    set petName = #{petname,jdbcType=VARCHAR},
+      breedId = #{breedid,jdbcType=INTEGER},
+      petSex = #{petsex,jdbcType=INTEGER},
+      birthday = #{birthday,jdbcType=DATE},
+      description = #{description,jdbcType=VARCHAR}
+    where petId = #{petid,jdbcType=INTEGER}
+  </update>
+
+  <resultMap id="selPetAndBreed" type="Petinfo" extends="BaseResultMap">
+    <association property="breedinfo" column="breedId" select="cn.com.Lyankun.springboot.mapper.BreedinfoMapper.selectByPrimaryKey"/>
+  </resultMap>
+
+
+  <select id="selectPageByPramas" resultMap="selPetAndBreed">
+    select  <include refid="Base_Column_List"/> from petinfo
+    <where>
+      <if test="petid!=null and petid!=0">
+        and petid=#{petid}
+      </if>
+      <if test="petname!=null and petname!=''">
+        and petname like concat("%",#{petname},"%")
+      </if>
+      <if test="breedid!=null and breedid!=0">
+        and breedid=#{breedid}
+      </if>
+    </where>
+    order by petid desc
+  </select>
+
+  <!--批量删除-->
+  <delete id="deleteBatchByIds">
+    delete from petinfo where petid in
+    <foreach collection="ids" item="item" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </delete>
+</mapper>
